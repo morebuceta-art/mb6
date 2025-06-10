@@ -70,7 +70,7 @@ suite('Unit Tests', function () {
     test('#isBelow, #isAtLeast', function () {
       assert.isAtLeast('world'.length, 5); // 5 >= 5
       assert.isBelow(1, 2);                // 1 < 2
-      assert.isBelow(1, 3)                 // 1 < 3
+      assert.isBelow(1, 3);                 // 1 < 3
       assert.isBelow(0.9, 1);              // 0.9 < 1
     });
     // #10
