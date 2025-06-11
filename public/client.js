@@ -43,8 +43,8 @@ function Utils() {
           contentType = "application/json";
         } else {
           query = [];
-          for (let key in params) {
-            query.push(key + '=' + encodeURIComponent(params[key]));
+          for (let key in options.data) {
+            query.push(key + '=' + encodeURIComponent(options.data[key]));
             query.push('&');
           }
           query.pop();
@@ -94,10 +94,14 @@ utils.ready(function() {
       };
       div.innerHTML = '<p>Loading...</p>';
       utils.ajax(options, function(err, res) {
-        if(err) return console.log(err);
-        div.innerHTML = '<p>first name: <span id="name">' + res.name + '</span><p>' +
-          '<p>last name: <span id="surname">' + res.surname + '</span><p>' +
-          '<p>dates: <span id="dates">' + res.dates + '</span><p>';
+       if(err) return console.log(err);
+       div.innerHTML = `
+         <p>first name: <span id="name">${res.name}</span></p>
+         <p>last name: <span id="surname">${res.surname}</span></p>
+         <p>dates: <span id="dates">${res.dates || ''}</span></p>
+  `;
+});
+
       });
     }
   });
