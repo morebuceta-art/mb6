@@ -10,7 +10,6 @@ Browser.site = 'http://0.0.0.0:3000';
 
 suite('Functional Tests', function () {
 
-  // Tests con chai-http (API)
   test('Test GET /hello with no name', function (done) {
     chai
       .request(server)
@@ -70,6 +69,10 @@ suite('Functional Tests with Zombie.js', function () {
     browser.visit('/', done);
   });
 
+  beforeEach(function(done) {
+    browser.visit('/', done);
+  });
+
   test('GET /hello with no name shows "hello Guest"', function (done) {
     browser.visit('/hello', function () {
       assert.equal(browser.status, 200);
@@ -109,3 +112,4 @@ suite('Functional Tests with Zombie.js', function () {
   });
 
 });
+
