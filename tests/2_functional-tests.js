@@ -10,6 +10,7 @@ Browser.site = 'http://0.0.0.0:3000';
 
 suite('Functional Tests', function () {
 
+  // Tests con chai-http (API)
   test('Test GET /hello with no name', function (done) {
     chai
       .request(server)
