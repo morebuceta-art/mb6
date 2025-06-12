@@ -3,12 +3,13 @@ const chaiHttp = require('chai-http');
 const server = require('../server'); 
 
 const { assert } = chai;
-
 chai.use(chaiHttp);
+
+const Browser = require('zombie');
+Browser.site = 'http://0.0.0.0:3000';
 
 suite('Functional Tests', function () {
 
-  // #1
   test('Test GET /hello with no name', function (done) {
     chai
       .request(server)
@@ -20,7 +21,6 @@ suite('Functional Tests', function () {
       });
   });
 
-  // #2
   test('Test GET /hello with your name', function (done) {
     chai
       .request(server)
@@ -32,7 +32,6 @@ suite('Functional Tests', function () {
       });
   });
 
-  // #3
   test('Send {surname: "Colombo"}', function (done) {
     chai
       .request(server)
@@ -47,7 +46,6 @@ suite('Functional Tests', function () {
       });
   });
 
-  // #4
   test('Send {surname: "da Verrazzano"}', function (done) {
     chai
       .request(server)
@@ -60,6 +58,57 @@ suite('Functional Tests', function () {
         assert.equal(res.body.surname, 'da Verrazzano');
         done();
       });
+  });
+
+});
+
+suite('Functional Tests with Zombie.js', function() {
+  const browser = new Browser();
+
+  suiteSetup(function(done) {
+    browser.visit('/', done);
+  });
+
+  test('GET /hello with no name shows "hello Guest"', function(done) {
+    browser.visit('/hello', function() {
+      assert.equal(browser.status, 200);
+      assert.include(browser.text('body'), 'hello Guest');
+      done();
+    });
+  });
+
+  test('GET /hello with name=Julian shows "hello Julian"', function(done) {
+    browser.visit('/hello?name=Julian', function() {
+      assert.equal(browser.status, 200);
+      assert.include(browser.text('body'), 'hello Julian');
+      done();
+    });
+  });
+
+  test('Submit surname "Colombo" and check response', function(done) {
+    browser.visit('/', function() {
+      browser
+        .fill('surname', 'Colombo')
+        .pressButton('submit', function() {
+          assert.equal(browser.status, 200);
+          assert.include(browser.text('body'), 'Cristoforo');
+          assert.include(browser.text('body'), 'Colombo');
+          done();
+        });
+    });
+  });
+
+  test('Submit surname "da Verrazzano" and check response', function(done) {
+    browser.visit('/', function() {
+      browser
+        .fill('surname', 'da Verrazzano')
+        .pressButton('submit', function() {
+          assert.equal(browser.status, 200);
+          assert.include(browser.text('body'), 'Giovanni');
+          assert.include(browser.text('body'), 'da Verrazzano');
+          done();
+        });
+    });
   });
 
 });
