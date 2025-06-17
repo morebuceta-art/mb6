@@ -7,7 +7,7 @@ const { assert } = chai;
 chai.use(chaiHttp);
 
 const PORT = process.env.PORT || 3000;
-Browser.localhost('localhost', PORT);
+Browser.site = `http://localhost:${PORT}`;
 
 suite('Functional Tests', function () {
   test('GET /hello with no name', function (done) {
