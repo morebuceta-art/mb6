@@ -6,7 +6,7 @@ const { assert } = chai;
 chai.use(chaiHttp);
 
 const Browser = require('zombie');
-Browser.site = 'http://0.0.0.0:3000';
+Browser.localhost('localhost', process.env.PORT || 3000);
 
 suite('Functional Tests', function () {
 
@@ -90,12 +90,17 @@ suite('Functional Tests with Zombie.js', function () {
   });
 
   test('Submit surname "Colombo" and check response in spans', function (done) {
-    browser
-      .fill('surname', 'Colombo')
+    browser.fill('surname', 'Colombo')
       .pressButton('submit', function () {
-        assert.equal(browser.status, 200);
-        assert.equal(browser.text('#name'), 'Cristoforo');
-        assert.equal(browser.text('#surname'), 'Colombo');
+browser.fill('surname', 'Colombo')
+  .pressButton('submit', function () {
+    browser.assert.success();
+    browser.assert.text('span#name', 'Cristoforo');
+    browser.assert.text('span#surname', 'Colombo');
+    browser.assert.element('span#dates', 1);
+    done();
+  });
+
         done();
       });
   });
