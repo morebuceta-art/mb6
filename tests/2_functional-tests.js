@@ -1,16 +1,16 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const server = require('../server');
+const Browser = require('zombie');
 
 const { assert } = chai;
 chai.use(chaiHttp);
 
-const Browser = require('zombie');
 Browser.localhost('localhost', process.env.PORT || 3000);
 
 suite('Functional Tests', function () {
-
-  test('Test GET /hello with no name', function (done) {
+  
+  test('GET /hello with no name', function (done) {
     chai
       .request(server)
       .get('/hello')
@@ -21,7 +21,7 @@ suite('Functional Tests', function () {
       });
   });
 
-  test('Test GET /hello with your name', function (done) {
+  test('GET /hello with name=Julian', function (done) {
     chai
       .request(server)
       .get('/hello?name=Julian')
@@ -59,18 +59,13 @@ suite('Functional Tests', function () {
         done();
       });
   });
-
 });
 
 suite('Functional Tests with Zombie.js', function () {
   const browser = new Browser();
 
   suiteSetup(function (done) {
-    browser.visit('/', done);
-  });
-
-  beforeEach(function(done) {
-    browser.visit('/', done);
+    return browser.visit('/', done);
   });
 
   test('GET /hello with no name shows "hello Guest"', function (done) {
@@ -90,31 +85,32 @@ suite('Functional Tests with Zombie.js', function () {
   });
 
   test('Submit surname "Colombo" and check response in spans', function (done) {
-    browser.fill('surname', 'Colombo')
-      .pressButton('submit', function () {
-browser.fill('surname', 'Colombo')
-  .pressButton('submit', function () {
-    browser.assert.success();
-    browser.assert.text('span#name', 'Cristoforo');
-    browser.assert.text('span#surname', 'Colombo');
-    browser.assert.element('span#dates', 1);
-    done();
-  });
-
-        done();
-      });
+    browser.visit('/', function () {
+      browser
+        .fill('surname', 'Colombo')
+        .pressButton('submit', function () {
+          browser.assert.success();
+          browser.assert.text('span#name', 'Cristoforo');
+          browser.assert.text('span#surname', 'Colombo');
+          browser.assert.element('span#dates', 1);
+          done();
+        });
+    });
   });
 
   test('Submit surname "da Verrazzano" and check response in spans', function (done) {
-    browser
-      .fill('surname', 'da Verrazzano')
-      .pressButton('submit', function () {
-        assert.equal(browser.status, 200);
-        assert.equal(browser.text('#name'), 'Giovanni');
-        assert.equal(browser.text('#surname'), 'da Verrazzano');
-        done();
-      });
+    browser.visit('/', function () {
+      browser
+        .fill('surname', 'da Verrazzano')
+        .pressButton('submit', function () {
+          browser.assert.success();
+          browser.assert.text('span#name', 'Giovanni');
+          browser.assert.text('span#surname', 'da Verrazzano');
+          browser.assert.element('span#dates', 1);
+          done();
+        });
+    });
   });
-
 });
+
 
