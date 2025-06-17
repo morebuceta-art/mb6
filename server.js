@@ -62,7 +62,7 @@ const travellers = function (req, res) {
 };
 
 
-  app.route('/travellers')
+app.route('/travellers')
   .put(travellers)
   .post(travellers);
 
