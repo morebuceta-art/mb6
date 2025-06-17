@@ -64,6 +64,7 @@ const travellers = function (req, res) {
 
 app.route('/travellers')
   .put(travellers);
+  .post(travellers);
 
 let error;
 app.get('/_api/get-tests', cors(), function (req, res, next) {
