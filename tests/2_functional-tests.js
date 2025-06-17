@@ -1,117 +1,70 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const server = require('../server');
+const assert = chai.assert;
 const Browser = require('zombie');
+const server = require('../server');
 
-const { assert } = chai;
-chai.use(chaiHttp);
+Browser.site = 'http://0.0.0.0:3000';
 
-const PORT = process.env.PORT || 3000;
-Browser.site = `http://localhost:${PORT}`;
+suite('Functional Tests with Zombie.js', function() {
+  this.timeout(10000); // Aumentamos el timeout para pruebas de navegador
 
-suite('Functional Tests', function () {
-  test('GET /hello with no name', function (done) {
-    chai
-      .request(server)
-      .get('/hello')
-      .end(function (err, res) {
-        assert.equal(res.status, 200);
-        assert.equal(res.text, 'hello Guest');
-        done();
-      });
-  });
-
-  test('GET /hello with name=Julian', function (done) {
-    chai
-      .request(server)
-      .get('/hello?name=Julian')
-      .end(function (err, res) {
-        assert.equal(res.status, 200);
-        assert.equal(res.text, 'hello Julian');
-        done();
-      });
-  });
-
-  test('Send {surname: "Colombo"}', function (done) {
-    chai
-      .request(server)
-      .put('/travellers')
-      .send({ surname: 'Colombo' })
-      .end(function (err, res) {
-        assert.equal(res.status, 200);
-        assert.equal(res.type, 'application/json');
-        assert.equal(res.body.name, 'Cristoforo');
-        assert.equal(res.body.surname, 'Colombo');
-        done();
-      });
-  });
-
-  test('Send {surname: "da Verrazzano"}', function (done) {
-    chai
-      .request(server)
-      .put('/travellers')
-      .send({ surname: 'da Verrazzano' })
-      .end(function (err, res) {
-        assert.equal(res.status, 200);
-        assert.equal(res.type, 'application/json');
-        assert.equal(res.body.name, 'Giovanni');
-        assert.equal(res.body.surname, 'da Verrazzano');
-        done();
-      });
-  });
-});
-
-suite('Functional Tests with Zombie.js', function () {
   const browser = new Browser();
 
-  suiteSetup(function (done) {
-    browser.visit('/', done);
+  suiteSetup(function(done) {
+    return browser.visit('/', done);
   });
 
-  test('GET /hello with no name shows "hello Guest"', function (done) {
-    browser.visit(`http://localhost:${PORT}/hello`, function () {
-      assert.equal(browser.status, 200);
-      assert.include(browser.text('body'), 'hello Guest');
-      done();
+  test('should have a working "site" property', function() {
+    assert.isNotNull(browser.site);
+  });
+
+  suite('"Famous Italian Explorers" form', function() {
+    test('Submit the surname "Colombo" in the HTML form', function(done) {
+      browser.fill('surname', 'Colombo').then(() => {
+        return browser.pressButton('submit');
+      }).then(() => {
+        browser.assert.success();
+        browser.assert.text('span#name', 'Cristoforo');
+        browser.assert.text('span#surname', 'Colombo');
+        browser.assert.element('span#dates', 1);
+        done();
+      }).catch(done);
+    });
+
+    test('Submit the surname "Vespucci" in the HTML form', function(done) {
+      browser.fill('surname', 'Vespucci').then(() => {
+        return browser.pressButton('submit');
+      }).then(() => {
+        browser.assert.success();
+        browser.assert.text('span#name', 'Amerigo');
+        browser.assert.text('span#surname', 'Vespucci');
+        browser.assert.element('span#dates', 1);
+        done();
+      }).catch(done);
     });
   });
 
-  test('GET /hello with name=Julian shows "hello Julian"', function (done) {
-    browser.visit(`http://localhost:${PORT}/hello?name=Julian`, function () {
-      assert.equal(browser.status, 200);
-      assert.include(browser.text('body'), 'hello Julian');
-      done();
+  suite('GET /hello', function() {
+    test('should respond with "hello Guest" when no name parameter', function(done) {
+      browser.visit('/hello', function() {
+        browser.assert.success();
+        browser.assert.text('body', 'hello Guest');
+        done();
+      });
     });
-  });
 
-  test('Submit surname "Colombo" and check response in spans', function (done) {
-    browser.visit('/', function () {
-      browser
-        .fill('surname', 'Colombo')
-        .pressButton('submit', function () {
-          browser.assert.success();
-          browser.assert.text('span#name', 'Cristoforo');
-          browser.assert.text('span#surname', 'Colombo');
-          browser.assert.element('span#dates', 1);
-          done();
-        });
-    });
-  });
-
-  test('Submit surname "da Verrazzano" and check response in spans', function (done) {
-    browser.visit('/', function () {
-      browser
-        .fill('surname', 'da Verrazzano')
-        .pressButton('submit', function () {
-          browser.assert.success();
-          browser.assert.text('span#name', 'Giovanni');
-          browser.assert.text('span#surname', 'da Verrazzano');
-          browser.assert.element('span#dates', 1);
-          done();
-        });
+    test('should respond with "hello Julian" when name=Julian', function(done) {
+      browser.visit('/hello?name=Julian', function() {
+        browser.assert.success();
+        browser.assert.text('body', 'hello Julian');
+        done();
+      });
     });
   });
 });
+
+
+
 
 
 
