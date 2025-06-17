@@ -6,10 +6,10 @@ const Browser = require('zombie');
 const { assert } = chai;
 chai.use(chaiHttp);
 
-Browser.localhost('localhost', process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+Browser.localhost('localhost', PORT);
 
 suite('Functional Tests', function () {
-  
   test('GET /hello with no name', function (done) {
     chai
       .request(server)
@@ -65,11 +65,11 @@ suite('Functional Tests with Zombie.js', function () {
   const browser = new Browser();
 
   suiteSetup(function (done) {
-    return browser.visit('/', done);
+    browser.visit('/', done);
   });
 
   test('GET /hello with no name shows "hello Guest"', function (done) {
-    browser.visit('/hello', function () {
+    browser.visit(`http://localhost:${PORT}/hello`, function () {
       assert.equal(browser.status, 200);
       assert.include(browser.text('body'), 'hello Guest');
       done();
@@ -77,7 +77,7 @@ suite('Functional Tests with Zombie.js', function () {
   });
 
   test('GET /hello with name=Julian shows "hello Julian"', function (done) {
-    browser.visit('/hello?name=Julian', function () {
+    browser.visit(`http://localhost:${PORT}/hello?name=Julian`, function () {
       assert.equal(browser.status, 200);
       assert.include(browser.text('body'), 'hello Julian');
       done();
@@ -112,5 +112,6 @@ suite('Functional Tests with Zombie.js', function () {
     });
   });
 });
+
 
 
