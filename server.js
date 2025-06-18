@@ -1,29 +1,33 @@
-'use strict';
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
+const apiRoutes = require('./routes/api.js');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-const apiRoutes = require('./routes/api');
-
-app.use('/api', apiRoutes);
-
-app.use(express.static(__dirname + '/public'));
-
+// Ruta principal
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-app.use((req, res) => {
-  res.status(404).type('text').send('Not Found');
+// Rutas API
+app.use('/api', apiRoutes);
+
+// Middleware para errores
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something broke!' });
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-});
+module.exports = app; // Para testing
 
-module.exports = app;
+// Solo inicia el servidor si no estamos en modo test
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
