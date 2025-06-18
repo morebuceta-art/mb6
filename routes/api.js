@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router(); // <-- Esta línea faltaba
-const ConvertHandler = require('../controllers/convertHandler.js');
+const ConvertHandler = require('../controllers/convertHandler');
 const convertHandler = new ConvertHandler();
 
 // Ruta GET /api/convert
