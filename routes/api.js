@@ -1,11 +1,9 @@
 router.get('/convert', (req, res) => {
   const input = req.query.input;
-  if (!input) return res.send('invalid number and unit');
-  
   const initNum = convertHandler.getNum(input);
   const initUnit = convertHandler.getUnit(input);
 
-  // Manejo de errores exacto
+  // Manejo de errores (igual que antes)
   if (initNum === 'invalid number' && initUnit === 'invalid unit') {
     return res.send('invalid number and unit');
   }
@@ -16,18 +14,18 @@ router.get('/convert', (req, res) => {
     return res.send('invalid unit');
   }
 
-  const returnNum = convertHandler.convert(initNum, initUnit);
-  const returnUnit = convertHandler.getReturnUnit(initUnit);
-  
-  // Asegurar formato de unidades (L mayúscula, resto minúsculas)
+  // NORMALIZACIÓN DE UNIDADES (AÑADE ESTO)
   const formattedInitUnit = initUnit.toLowerCase() === 'l' ? 'L' : initUnit.toLowerCase();
+  const returnUnit = convertHandler.getReturnUnit(initUnit);
   const formattedReturnUnit = returnUnit.toLowerCase() === 'l' ? 'L' : returnUnit.toLowerCase();
+
+  const returnNum = convertHandler.convert(initNum, initUnit);
   
   res.json({
-    initNum: initNum,
-    initUnit: formattedInitUnit,
-    returnNum: returnNum,
-    returnUnit: formattedReturnUnit,
+    initNum,
+    initUnit: formattedInitUnit, // Usa la versión normalizada
+    returnNum,
+    returnUnit: formattedReturnUnit, // Usa la versión normalizada
     string: convertHandler.getString(initNum, formattedInitUnit, returnNum, formattedReturnUnit)
   });
 });
