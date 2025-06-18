@@ -1,10 +1,10 @@
 function ConvertHandler() {
   // Métodos públicos
-  this.getNum = function(input) {
+  this.getNum = function(input) {...};
     // implementación actual que tengas
   };
 
-  this.getUnit = function(input) {
+  this.getUnit = function(input) {...};
     // implementación actual que tengas
   };
 
