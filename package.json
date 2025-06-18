@@ -1,19 +1,23 @@
 {
-  "name": "automated-testing-app",
-  "version": "0.0.1",
-  "description": "Boilerplate for the Quality Assurance and Testing with Chai challenges",
+  "name": "metric-imperial-converter",
+  "version": "1.0.0",
+  "description": "Metric-Imperial Converter Project",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "mocha ./tests/*.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "body-parser": "1.19.0",
-    "chai": "4.3.4",
-    "chai-http": "4.3.0",
-    "cors": "2.8.5",
-    "express": "4.17.1",
-    "mocha": "9.0.3",
-    "zombie": "6.1.4"
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.3.0",
+    "mocha": "^10.2.0",
+    "nodemon": "^3.0.2"
   },
   "license": "MIT"
 }
