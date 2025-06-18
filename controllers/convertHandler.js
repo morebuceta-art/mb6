@@ -1,41 +1,35 @@
 const convertHandler = {
   getNum(input) {
     if (!input) return 1;
-    
-    // Busca números en el input (enteros, decimales o fracciones)
     const numRegex = /^(\d+\.?\d*|\d*\.?\d+)(?:\/(\d+\.?\d*|\d*\.?\d+))?/;
     const match = input.match(numRegex);
     
-    if (!match) return 1; // Si no encuentra número, devuelve 1 por defecto
+    if (!match) return 1;
     
-    // Si es una fracción (tiene /)
+    // Handle double fractions
+    if ((input.match(/\//g) || []).length > 1) return 'invalid number';
+    
     if (match[2]) {
-      if (match[0].includes('/') && match[0].match(/\//g).length > 1) {
-        return 'invalid number'; // Doble fracción
-      }
       return parseFloat(match[1]) / parseFloat(match[2]);
     }
-    
     return parseFloat(match[0]) || 1;
   },
 
   getUnit(input) {
-    const units = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
+    const validUnits = ['gal','l','mi','km','lbs','kg'];
     const unitRegex = /[a-zA-Z]+$/;
     const match = input.match(unitRegex);
     
     if (!match) return 'invalid unit';
     
-    const unit = match[0].toLowerCase();
+    let unit = match[0].toLowerCase();
+    if (unit === 'l') unit = 'L';
     
-    // Caso especial para litros (puede venir como L o l)
-    if (unit === 'l') return 'L';
-    
-    return units.includes(unit) ? unit : 'invalid unit';
+    return validUnits.includes(unit) ? unit : 'invalid unit';
   },
 
   getReturnUnit(initUnit) {
-    const unitPairs = {
+    const unitMap = {
       gal: 'L',
       L: 'gal',
       mi: 'km',
@@ -43,7 +37,7 @@ const convertHandler = {
       lbs: 'kg',
       kg: 'lbs'
     };
-    return unitPairs[initUnit];
+    return unitMap[initUnit];
   },
 
   spellOutUnit(unit) {
@@ -59,33 +53,20 @@ const convertHandler = {
   },
 
   convert(initNum, initUnit) {
-    const galToL = 3.78541;
-    const lbsToKg = 0.453592;
-    const miToKm = 1.60934;
+    const conversions = {
+      gal: 3.78541,
+      L: 1/3.78541,
+      mi: 1.60934,
+      km: 1/1.60934,
+      lbs: 0.453592,
+      kg: 1/0.453592
+    };
     
-    switch (initUnit) {
-      case 'gal':
-        return initNum * galToL;
-      case 'L':
-        return initNum / galToL;
-      case 'mi':
-        return initNum * miToKm;
-      case 'km':
-        return initNum / miToKm;
-      case 'lbs':
-        return initNum * lbsToKg;
-      case 'kg':
-        return initNum / lbsToKg;
-      default:
-        return NaN;
-    }
+    const result = initNum * conversions[initUnit];
+    return parseFloat(result.toFixed(5));
   },
 
   getString(initNum, initUnit, returnNum, returnUnit) {
-    const initUnitString = this.spellOutUnit(initUnit);
-    const returnUnitString = this.spellOutUnit(returnUnit);
-    return `${initNum} ${initUnitString} converts to ${returnNum.toFixed(5)} ${returnUnitString}`;
+    return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;
   }
 };
-
-module.exports = convertHandler;
