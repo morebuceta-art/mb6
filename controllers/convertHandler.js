@@ -2,23 +2,19 @@ const convertHandler = {
   getNum(input) {
     if (!input) return 1;
     
-    // Regex mejorado para números
     const numRegex = /^([\d.\/]+)/;
     const match = input.match(numRegex);
     
     if (!match) return 1;
     
     const numStr = match[0];
-    // Verificar fracciones dobles
     if ((numStr.match(/\//g) || []).length > 1) return 'invalid number';
     
-    // Evaluar fracciones y decimales
     const parts = numStr.split('/');
     if (parts.length === 2) {
       const num1 = parseFloat(parts[0]);
       const num2 = parseFloat(parts[1]);
-      if (isNaN(num1) || isNaN(num2)) return 'invalid number';
-      return num1 / num2;
+      return isNaN(num1) || isNaN(num2) ? 'invalid number' : num1 / num2;
     }
     
     const num = parseFloat(numStr);
@@ -26,21 +22,18 @@ const convertHandler = {
   },
 
   getUnit(input) {
-    const validUnits = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
+    const validUnits = ['gal','l','mi','km','lbs','kg'];
     const unitRegex = /[a-zA-Z]+$/;
     const match = input.match(unitRegex);
     
     if (!match) return 'invalid unit';
     
-    const unit = match[0].toLowerCase();
-    // Liter siempre en mayúscula
-    if (unit === 'l') return 'L';
-    
-    return validUnits.includes(unit) ? unit : 'invalid unit';
+    let unit = match[0].toLowerCase();
+    return validUnits.includes(unit) ? (unit === 'l' ? 'L' : unit) : 'invalid unit';
   },
 
   getReturnUnit(initUnit) {
-    const unitPairs = {
+    const unitMap = {
       gal: 'L',
       L: 'gal',
       mi: 'km',
@@ -48,7 +41,7 @@ const convertHandler = {
       lbs: 'kg',
       kg: 'lbs'
     };
-    return unitPairs[initUnit.toLowerCase()] || 'invalid unit';
+    return unitMap[initUnit] || 'invalid unit';
   },
 
   spellOutUnit(unit) {
@@ -60,31 +53,25 @@ const convertHandler = {
       lbs: 'pounds',
       kg: 'kilograms'
     };
-    return unitNames[unit.toLowerCase()] || 'invalid unit';
+    return unitNames[unit] || 'invalid unit';
   },
 
   convert(initNum, initUnit) {
     const conversions = {
       gal: 3.78541,
-      l: 3.78541, // Para manejar 'l' en minúscula
+      L: 1/3.78541,
       mi: 1.60934,
-      km: 0.621371,
+      km: 1/1.60934,
       lbs: 0.453592,
-      kg: 2.20462
+      kg: 1/0.453592
     };
     
-    const unit = initUnit.toLowerCase();
-    const result = initNum * conversions[unit];
-    return parseFloat(result.toFixed(5));
+    return parseFloat((initNum * conversions[initUnit]).toFixed(5));
   },
 
   getString(initNum, initUnit, returnNum, returnUnit) {
-    return {
-      initNum,
-      initUnit: initUnit === 'l' ? 'L' : initUnit, // Asegurar 'L' mayúscula
-      returnNum,
-      returnUnit,
-      string: `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`
-    };
+    return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;
   }
 };
+
+module.exports = convertHandler;
