@@ -1,14 +1,11 @@
-const express = require('express');
-const ConvertHandler = require('../controllers/convertHandler.js');
-const router = express.Router();
-const convertHandler = new ConvertHandler();
-
 router.get('/convert', (req, res) => {
   const input = req.query.input;
+  if (!input) return res.send('invalid number and unit');
+  
   const initNum = convertHandler.getNum(input);
   const initUnit = convertHandler.getUnit(input);
 
-  // Manejo de errores (DEVUELVE STRINGS DIRECTAMENTE)
+  // Manejo de errores exacto
   if (initNum === 'invalid number' && initUnit === 'invalid unit') {
     return res.send('invalid number and unit');
   }
@@ -19,18 +16,18 @@ router.get('/convert', (req, res) => {
     return res.send('invalid unit');
   }
 
-  // Caso válido (devuelve objeto JSON)
   const returnNum = convertHandler.convert(initNum, initUnit);
   const returnUnit = convertHandler.getReturnUnit(initUnit);
-  const string = convertHandler.getString(initNum, initUnit, returnNum, returnUnit);
-
+  
+  // Asegurar formato de unidades (L mayúscula, resto minúsculas)
+  const formattedInitUnit = initUnit.toLowerCase() === 'l' ? 'L' : initUnit.toLowerCase();
+  const formattedReturnUnit = returnUnit.toLowerCase() === 'l' ? 'L' : returnUnit.toLowerCase();
+  
   res.json({
-    initNum,
-    initUnit,
-    returnNum,
-    returnUnit,
-    string
+    initNum: initNum,
+    initUnit: formattedInitUnit,
+    returnNum: returnNum,
+    returnUnit: formattedReturnUnit,
+    string: convertHandler.getString(initNum, formattedInitUnit, returnNum, formattedReturnUnit)
   });
 });
-
-module.exports = router;
