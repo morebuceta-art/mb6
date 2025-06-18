@@ -1,4 +1,5 @@
 function ConvertHandler() {
+  
   this.getNum = function(input) {
     if (!input) return 1;
     
@@ -24,15 +25,13 @@ function ConvertHandler() {
     if (!input) return 'invalid unit';
     
     const validUnits = ['gal', 'l', 'mi', 'km', 'lbs', 'kg'];
-    const unitMatch = input.match(/[a-zA-Z]/);
+    const unitMatch = input.match(/[a-zA-Z]+/);
     if (!unitMatch) return 'invalid unit';
     
-    let unit = input.slice(unitMatch.index).toLowerCase();
+    let unit = unitMatch[0].toLowerCase();
     if (unit === 'l') unit = 'L';
     
-    return validUnits.includes(unit.toLowerCase()) || unit === 'L' 
-      ? unit 
-      : 'invalid unit';
+    return validUnits.includes(unit.toLowerCase()) ? unit : 'invalid unit';
   };
 
   this.getReturnUnit = function(initUnit) {
@@ -49,37 +48,31 @@ function ConvertHandler() {
   };
 
   this.spellOutUnit = function(unit) {
-    const unitLower = unit.toLowerCase();
-    const spellings = {
+    const unitMap = {
       'gal': 'gallons',
-      'l': 'liters',
+      'L': 'liters',
       'mi': 'miles',
       'km': 'kilometers',
       'lbs': 'pounds',
       'kg': 'kilograms'
     };
-    return spellings[unitLower] || 'invalid unit';
+    return unitMap[unit] || 'invalid unit';
   };
 
   this.convert = function(initNum, initUnit) {
-    const galToL = 3.78541;
-    const lbsToKg = 0.453592;
-    const miToKm = 1.60934;
+    const rates = {
+      'gal': 3.78541,
+      'l': 1/3.78541,
+      'mi': 1.60934,
+      'km': 1/1.60934,
+      'lbs': 0.453592,
+      'kg': 1/0.453592
+    };
     
-    const unit = initUnit.toLowerCase();
-    let result;
+    const rate = rates[initUnit.toLowerCase()];
+    if (!rate) return 'invalid unit';
     
-    switch(unit) {
-      case 'gal': result = initNum * galToL; break;
-      case 'l': result = initNum / galToL; break;
-      case 'mi': result = initNum * miToKm; break;
-      case 'km': result = initNum / miToKm; break;
-      case 'lbs': result = initNum * lbsToKg; break;
-      case 'kg': result = initNum / lbsToKg; break;
-      default: return null;
-    }
-    
-    return parseFloat(result.toFixed(5));
+    return parseFloat((initNum * rate).toFixed(5));
   };
 
   this.getString = function(initNum, initUnit, returnNum, returnUnit) {
