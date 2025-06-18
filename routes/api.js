@@ -1,4 +1,5 @@
 const express = require('express');
+const express = require('express');
 const router = express.Router();
 const ConvertHandler = require('../controllers/convertHandler');
 const convertHandler = new ConvertHandler();
@@ -6,9 +7,7 @@ const convertHandler = new ConvertHandler();
 router.get('/convert', (req, res) => {
   const input = req.query.input;
   
-  if (input === undefined || input === '') {
-    return res.send('invalid number and unit');
-  }
+  if (!input) return res.send('invalid number and unit');
 
   const initNum = convertHandler.getNum(input);
   const initUnit = convertHandler.getUnit(input);
@@ -23,24 +22,18 @@ router.get('/convert', (req, res) => {
     return res.send('invalid unit');
   }
 
-  const formattedInitUnit = initUnit.toLowerCase() === 'l' ? 'L' : initUnit.toLowerCase();
-  const returnUnit = convertHandler.getReturnUnit(initUnit);
-  const formattedReturnUnit = returnUnit.toLowerCase() === 'l' ? 'L' : returnUnit.toLowerCase();
-
   const returnNum = convertHandler.convert(initNum, initUnit);
+  const returnUnit = convertHandler.getReturnUnit(initUnit);
 
   res.json({
-    initNum: initNum === 1 && !input.match(/\d/) ? 1 : initNum,
-    initUnit: formattedInitUnit,
+    initNum: initNum,
+    initUnit: initUnit,
     returnNum: returnNum,
-    returnUnit: formattedReturnUnit,
-    string: convertHandler.getString(
-      initNum === 1 && !input.match(/\d/) ? 1 : initNum,
-      formattedInitUnit,
-      returnNum,
-      formattedReturnUnit
-    )
+    returnUnit: returnUnit,
+    string: convertHandler.getString(initNum, initUnit, returnNum, returnUnit)
   });
 });
+
+module.exports = router;
 
 module.exports = router;
