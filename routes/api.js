@@ -1,19 +1,13 @@
-
 const express = require('express');
 const router = express.Router();
 const convertHandler = require('../controllers/convertHandler');
 
 router.get('/convert', (req, res) => {
   const input = req.query.input;
-  
-  if (!input) {
-    return res.status(400).json({ error: 'No input provided' });
-  }
-
   const initNum = convertHandler.getNum(input);
   const initUnit = convertHandler.getUnit(input);
 
-  // Manejo de errores
+  // Error handling
   if (initNum === 'invalid number' && initUnit === 'invalid unit') {
     return res.json({ error: 'invalid number and unit' });
   }
