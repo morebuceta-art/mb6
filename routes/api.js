@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router(); // <-- Esta línea es crucial
+const router = express.Router();
 const ConvertHandler = require('../controllers/convertHandler');
 const convertHandler = new ConvertHandler();
 
@@ -13,7 +13,6 @@ router.get('/convert', (req, res) => {
   const initNum = convertHandler.getNum(input);
   const initUnit = convertHandler.getUnit(input);
 
-  // Manejo de errores
   if (initNum === 'invalid number' && initUnit === 'invalid unit') {
     return res.send('invalid number and unit');
   }
@@ -24,12 +23,11 @@ router.get('/convert', (req, res) => {
     return res.send('invalid unit');
   }
 
-  // Normalización de unidades
   const formattedInitUnit = initUnit.toLowerCase() === 'l' ? 'L' : initUnit.toLowerCase();
   const returnUnit = convertHandler.getReturnUnit(initUnit);
   const formattedReturnUnit = returnUnit.toLowerCase() === 'l' ? 'L' : returnUnit.toLowerCase();
 
-  const returnNum = parseFloat(convertHandler.convert(initNum, initUnit).toFixed(5));
+  const returnNum = convertHandler.convert(initNum, initUnit);
 
   res.json({
     initNum: initNum === 1 && !input.match(/\d/) ? 1 : initNum,
@@ -45,4 +43,4 @@ router.get('/convert', (req, res) => {
   });
 });
 
-module.exports = router; // <-- Exportar el router
+module.exports = router;
