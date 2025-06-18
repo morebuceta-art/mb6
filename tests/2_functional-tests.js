@@ -1,68 +1,69 @@
 const chai = require('chai');
+const chaiHttp = require('chai-http');
 const assert = chai.assert;
-const Browser = require('zombie');
 const server = require('../server');
 
-Browser.site = 'http://0.0.0.0:3000';
+chai.use(chaiHttp);
 
-suite('Functional Tests with Zombie.js', function() {
-  this.timeout(10000); // Aumentamos el timeout para pruebas de navegador
+suite('Functional Tests', function() {
+  this.timeout(5000);
 
-  const browser = new Browser();
-
-  suiteSetup(function(done) {
-    return browser.visit('/', done);
-  });
-
-  test('should have a working "site" property', function() {
-    assert.isNotNull(browser.site);
-  });
-
-  suite('"Famous Italian Explorers" form', function() {
-    test('Submit the surname "Colombo" in the HTML form', function(done) {
-      browser.fill('surname', 'Colombo').then(() => {
-        return browser.pressButton('submit');
-      }).then(() => {
-        browser.assert.success();
-        browser.assert.text('span#name', 'Cristoforo');
-        browser.assert.text('span#surname', 'Colombo');
-        browser.assert.element('span#dates', 1);
-        done();
-      }).catch(done);
-    });
-
-    test('Submit the surname "Vespucci" in the HTML form', function(done) {
-      browser.fill('surname', 'Vespucci').then(() => {
-        return browser.pressButton('submit');
-      }).then(() => {
-        browser.assert.success();
-        browser.assert.text('span#name', 'Amerigo');
-        browser.assert.text('span#surname', 'Vespucci');
-        browser.assert.element('span#dates', 1);
-        done();
-      }).catch(done);
-    });
-  });
-
-  suite('GET /hello', function() {
-    test('should respond with "hello Guest" when no name parameter', function(done) {
-      browser.visit('/hello', function() {
-        browser.assert.success();
-        browser.assert.text('body', 'hello Guest');
+  test('Convert valid input (10L)', function(done) {
+    chai.request(server)
+      .get('/api/convert?input=10L')
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.initNum, 10);
+        assert.equal(res.body.initUnit, 'L');
+        assert.approximately(res.body.returnNum, 2.64172, 0.001);
+        assert.equal(res.body.returnUnit, 'gal');
         done();
       });
-    });
+  });
 
-    test('should respond with "hello Julian" when name=Julian', function(done) {
-      browser.visit('/hello?name=Julian', function() {
-        browser.assert.success();
-        browser.assert.text('body', 'hello Julian');
+  test('Convert invalid unit (32g)', function(done) {
+    chai.request(server)
+      .get('/api/convert?input=32g')
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, 'invalid unit');
         done();
       });
-    });
+  });
+
+  test('Convert invalid number (3/7.2/4kg)', function(done) {
+    chai.request(server)
+      .get('/api/convert?input=3/7.2/4kg')
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, 'invalid number');
+        done();
+      });
+  });
+
+  test('Convert invalid number and unit (3/7.2/4kilomegagram)', function(done) {
+    chai.request(server)
+      .get('/api/convert?input=3/7.2/4kilomegagram')
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, 'invalid number and unit');
+        done();
+      });
+  });
+
+  test('Convert with no number (kg)', function(done) {
+    chai.request(server)
+      .get('/api/convert?input=kg')
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.initNum, 1);
+        assert.equal(res.body.initUnit, 'kg');
+        assert.approximately(res.body.returnNum, 2.20462, 0.001);
+        assert.equal(res.body.returnUnit, 'lbs');
+        done();
+      });
   });
 });
-
 
 
 
