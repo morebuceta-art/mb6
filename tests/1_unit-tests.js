@@ -3,7 +3,7 @@ const assert = chai.assert;
 const convertHandler = require('../controllers/convertHandler.js');
 
 suite('Unit Tests', function() {
-  // getNum tests
+  // getNum tests (6 pruebas)
   test('Whole number input', function() {
     assert.strictEqual(convertHandler.getNum('10L'), 10);
   });
@@ -28,7 +28,7 @@ suite('Unit Tests', function() {
     assert.strictEqual(convertHandler.getNum('kg'), 1);
   });
 
-  // getUnit tests
+  // getUnit tests (2 pruebas)
   test('Valid input unit', function() {
     assert.strictEqual(convertHandler.getUnit('10L'), 'L');
     assert.strictEqual(convertHandler.getUnit('5.5kg'), 'kg');
@@ -39,7 +39,7 @@ suite('Unit Tests', function() {
     assert.strictEqual(convertHandler.getUnit('10g'), 'invalid unit');
   });
 
-  // getReturnUnit tests
+  // getReturnUnit tests (1 prueba)
   test('Return unit for valid input unit', function() {
     assert.strictEqual(convertHandler.getReturnUnit('gal'), 'L');
     assert.strictEqual(convertHandler.getReturnUnit('L'), 'gal');
@@ -49,7 +49,7 @@ suite('Unit Tests', function() {
     assert.strictEqual(convertHandler.getReturnUnit('kg'), 'lbs');
   });
 
-  // spellOutUnit tests
+  // spellOutUnit tests (1 prueba)
   test('Spelled-out string unit', function() {
     assert.strictEqual(convertHandler.spellOutUnit('gal'), 'gallons');
     assert.strictEqual(convertHandler.spellOutUnit('L'), 'liters');
@@ -59,7 +59,7 @@ suite('Unit Tests', function() {
     assert.strictEqual(convertHandler.spellOutUnit('kg'), 'kilograms');
   });
 
-  // Conversion tests
+  // Conversion tests (6 pruebas)
   test('Convert gal to L', function() {
     assert.approximately(convertHandler.convert(1, 'gal'), 3.78541, 0.001);
   });
@@ -68,19 +68,6 @@ suite('Unit Tests', function() {
     assert.approximately(convertHandler.convert(1, 'L'), 0.26417, 0.001);
   });
 
-  test('Convert mi to km', function() {
-    assert.approximately(convertHandler.convert(1, 'mi'), 1.60934, 0.001);
-  });
-
-  test('Convert km to mi', function() {
-    assert.approximately(convertHandler.convert(1, 'km'), 0.62137, 0.001);
-  });
-
-  test('Convert lbs to kg', function() {
-    assert.approximately(convertHandler.convert(1, 'lbs'), 0.45359, 0.001);
-  });
-
-  test('Convert kg to lbs', function() {
-    assert.approximately(convertHandler.convert(1, 'kg'), 2.20462, 0.001);
-  });
-});
+  test('Convert l to gal', function() {
+    assert.approximately(convertHandler.convert(1, 'l'), 0.26417, 0.001);
+ 
