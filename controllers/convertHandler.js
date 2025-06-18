@@ -1,10 +1,25 @@
-const ConvertHandler = function() {
-  // ... (mantén tus otras funciones igual)
+function ConvertHandler() {
+  // Métodos públicos
+  this.getNum = function(input) {
+    // implementación actual que tengas
+  };
+
+  this.getUnit = function(input) {
+    // implementación actual que tengas
+  };
+
+  this.getReturnUnit = function(initUnit) {
+    // implementación actual que tengas
+  };
+
+  this.spellOutUnit = function(unit) {
+    // implementación actual que tengas
+  };
 
   this.convert = function(initNum, initUnit) {
     const galToL = 3.78541;
-    const lbsToKg = 0.453592; // Ajustado a 6 decimales
-    const miToKm = 1.60934;  // Ajustado a 5 decimales
+    const lbsToKg = 0.453592;
+    const miToKm = 1.60934;
     
     const unit = initUnit.toLowerCase();
     let result;
@@ -19,12 +34,13 @@ const ConvertHandler = function() {
       default: return null;
     }
     
-    // Redondeo a exactamente 5 decimales
     return parseFloat(result.toFixed(5));
   };
 
   this.getString = function(initNum, initUnit, returnNum, returnUnit) {
-    // Formato exacto que espera freeCodeCamp
     return `${initNum} ${this.spellOutUnit(initUnit)} converts to ${returnNum} ${this.spellOutUnit(returnUnit)}`;
   };
-};
+}
+
+// Exportación CORRECTA (asegúrate que sea exactamente así)
+module.exports = ConvertHandler;
