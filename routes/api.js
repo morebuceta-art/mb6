@@ -1,5 +1,4 @@
 const express = require('express');
-const express = require('express');
 const router = express.Router();
 const ConvertHandler = require('../controllers/convertHandler');
 const convertHandler = new ConvertHandler();
