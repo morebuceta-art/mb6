@@ -1,23 +1,28 @@
-document.addEventListener('DOMContentLoaded', function() {
-  const form = document.querySelector('form');
-  
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    const input = document.querySelector('input[name="surname"]');
+document.addEventListener('DOMContentLoaded', () => {
+  const convertBtn = document.getElementById('convert');
+  const inputField = document.getElementById('input');
+  const resultDiv = document.getElementById('result');
+
+  convertBtn.addEventListener('click', async () => {
+    const inputValue = inputField.value.trim();
     
-    fetch('/travellers', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ surname: input.value })
-    })
-    .then(response => response.json())
-    .then(data => {
-      document.getElementById('name').textContent = data.name;
-      document.getElementById('surname').textContent = data.surname;
-      document.getElementById('dates').textContent = data.dates;
-    })
-    .catch(error => console.error('Error:', error));
+    if (!inputValue) {
+      resultDiv.textContent = 'Please enter a value';
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/convert?input=${encodeURIComponent(inputValue)}`);
+      const data = await response.json();
+      
+      if (data.error) {
+        resultDiv.textContent = `Error: ${data.error}`;
+      } else {
+        resultDiv.textContent = data.string;
+      }
+    } catch (err) {
+      resultDiv.textContent = 'Error connecting to server';
+      console.error(err);
+    }
   });
 });
