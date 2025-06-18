@@ -1,23 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Quality Assurance</title>
-  <link rel="shortcut icon" href="https://cdn.freecodecamp.org/universal/favicons/favicon-32x32.png">
+  <title>Metric-Imperial Converter</title>
+  <link rel="stylesheet" href="/public/styles.css">
 </head>
 <body>
-  <form action="/travellers" method="POST">
-    <label>surname: 
-      <input type="text" name="surname" placeholder="try with 'Polo'...">
-    </label>
-    <button type="submit">submit</button>
-  </form>
-  
-  <div>
-    <p>first name: <span id="name"></span></p>
-    <p>last name: <span id="surname"></span></p>
-    <p>dates: <span id="dates"></span></p>
+  <div class="container">
+    <h1>Metric-Imperial Converter</h1>
+    <div class="converter">
+      <input type="text" id="input" placeholder="e.g., 10L, 5.5kg, 1/2mi">
+      <button id="convert">Convert</button>
+      <div id="result"></div>
+    </div>
   </div>
-
-  <script src="/client.js"></script>
+  <script src="/public/client.js"></script>
 </body>
 </html>
