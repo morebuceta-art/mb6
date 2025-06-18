@@ -30,5 +30,4 @@ app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
 
-module.exports = app;
-}
+module.exports = app; // <-- Este es el final correcto, sin llave adicional
